@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
-import { HomeLayout } from "./HomeLayout";
+
 import Navbar from "./Components/Navbar";
 
 const geistSans = Geist({
@@ -21,14 +21,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning="true" data-qb-installed="true">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         cz-shortcut-listen="true"
       >
         <AuthProvider>
           <Navbar />
-          <HomeLayout>{children}</HomeLayout>
+          {children}
         </AuthProvider>
       </body>
     </html>
