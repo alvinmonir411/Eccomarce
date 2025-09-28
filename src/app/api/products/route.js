@@ -12,6 +12,7 @@ export async function GET(req) {
         {
           projection: {
             images: 1,
+            _id: 1,
             title: 1,
             subtitle: 1,
             currency: 1,
@@ -23,7 +24,7 @@ export async function GET(req) {
           },
         }
       )
-      .toArray(); // correct camelCase
+      .toArray();
 
     return new Response(JSON.stringify(result), { status: 200 });
   } catch (err) {

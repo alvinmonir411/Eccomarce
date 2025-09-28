@@ -1,23 +1,37 @@
 "use client";
 import React, { useState } from "react";
+import axios from "axios";
+import { ShoppingCart } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 const Addtocard = ({ id }) => {
   const [loading, setLoading] = useState(false);
-
-  const handleAddToCart = () => {
+  const { user } = useAuth();
+  const handleAddToCart = async () => {
     setLoading(true);
-    console.log("Product added to cart:", id);
-    setTimeout(() => setLoading(false), 1000);
+
+    try {
+      const res = await axios.post("/api/addTocard", {
+        userId: user.uid,
+        productId: id,
+      });
+
+      if (res.data.success) {
+        console.log("Cart updated:", res.data);
+      } else {
+        console.error("Error:", res.data.error);
+      }
+    } catch (error) {
+      console.error("Request failed:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <button
-      onClick={handleAddToCart}
-      disabled={loading}
-      className="bg-yellow-600 hover:bg-yellow-700 text-white font-semibold px-10 py-3 rounded-2xl shadow-md transition w-full md:w-auto"
-    >
+    <div onClick={handleAddToCart} disabled={loading}>
       {loading ? "Adding..." : "Add to Cart"}
-    </button>
+    </div>
   );
 };
 

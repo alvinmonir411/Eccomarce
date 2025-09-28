@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "../Utilitis/ProductCard";
 import Link from "next/link";
+import { ShoppingCart, Eye } from "lucide-react";
 
 export default function AllProductsPage() {
   const [products, setProducts] = useState([]);
@@ -23,7 +24,7 @@ export default function AllProductsPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-50">
-        <div className="  text-center animate-pulse">
+        <div className="text-center animate-pulse">
           <p className="text-xl md:text-2xl font-semibold text-gray-800">
             Loading products...
           </p>
@@ -34,16 +35,22 @@ export default function AllProductsPage() {
   }
 
   return (
-    <section className="mt-5 px-4 py-12  min-h-screen">
+    <section className="mt-5 px-4 py-12 min-h-screen">
       <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-12 text-gray-900">
         Featured Products
       </h1>
 
       <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {products.map((product) => (
-          <Link key={product._id} href={`/products/${product._id}`}>
+          <div
+            key={product._id}
+            className="relative group rounded-xl overflow-hidden shadow hover:shadow-lg transition"
+          >
+            {/* Product Card */}
             <ProductCard product={product} />
-          </Link>
+
+            {/* Overlay Icons */}
+          </div>
         ))}
       </div>
     </section>

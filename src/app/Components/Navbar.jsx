@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   FaHome,
   FaBoxOpen,
@@ -16,10 +16,28 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import axios from "axios";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const { user, logout } = useAuth();
+
+  // Fetch cart items count
+  useEffect(() => {
+    if (user) {
+      const fetchCart = async () => {
+        try {
+          const res = await axios.get(`/api/cart?userId=${user._id}`);
+          setCartCount(res.data.length);
+        } catch (err) {
+          console.error("Failed to fetch cart:", err);
+        }
+      };
+      fetchCart();
+    }
+  }, [user]);
+
   const Navlinks = (
     <>
       <Link href="/" className="flex items-center gap-1 hovarText">
@@ -49,15 +67,22 @@ const Navbar = () => {
         <div className="hidden md:flex justify-center gap-8">{Navlinks}</div>
 
         {/* Right side icons */}
-        <div className="flex items-center gap-4 text-gray-700">
+        <div className="flex items-center gap-4 text-gray-700 relative">
           <Link href="/search" className="hovarText">
             <FaSearch size={20} />
           </Link>
           <Link href="/favorites" className="hovarText">
             <FaHeart size={20} />
           </Link>
-          <Link href="/cart" className="hovarText">
+
+          {/* Cart Icon with count */}
+          <Link href="/CartPage" className="hovarText relative">
             <FaShoppingCart size={20} />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
           </Link>
 
           {/* Login / Logout */}
