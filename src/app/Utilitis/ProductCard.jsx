@@ -110,7 +110,7 @@ const ProductCard = ({ product }) => {
         </div>
 
         {/* Add to Cart Button (Always Visible like reference) */}
-        <button
+        <div
           className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition ${
             product.stockQuantity === 0
               ? "bg-gray-400 text-white cursor-not-allowed"
@@ -124,7 +124,7 @@ const ProductCard = ({ product }) => {
           ) : (
             <Addtocard id={product._id} />
           )}
-        </button>
+        </div>
       </div>
     </div>
   );
