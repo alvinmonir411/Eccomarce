@@ -16,10 +16,9 @@ export async function POST(req) {
 
     if (existingItem) {
       // Update quantity
-      const updated = await db.collection("usercart").updateOne(
-        { _id: existingItem._id },
-        { $inc: { quantity } } 
-      );
+      const updated = await db
+        .collection("usercart")
+        .updateOne({ _id: existingItem._id }, { $inc: { quantity } });
       return new Response(JSON.stringify({ success: true, updated }), {
         status: 200,
       });
@@ -46,9 +45,9 @@ export async function POST(req) {
 }
 
 // GET => Fetch cart items with product details
+
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-
   const userId = searchParams.get("userId");
 
   if (!userId) {
@@ -62,26 +61,49 @@ export async function GET(req) {
   const db = client.db(process.env.MONGO_DB);
 
   try {
+    // 1️⃣ Fetch the cart items
     const cartItems = await db
       .collection("usercart")
       .find({ userId })
       .toArray();
-    console.log(cartItems);
+
     if (cartItems.length === 0) {
       return new Response(JSON.stringify({ success: true, items: [] }), {
         status: 200,
       });
     }
 
+    // 2️⃣ Get all product IDs
     const productIds = cartItems.map((item) => new ObjectId(item.productId));
-    console.log(productIds);
 
+    // 3️⃣ Fetch product details
     const products = await db
       .collection("juwelaryitemdeteils")
-      .find({ _id: { $in: productIds } })
+      .find(
+        { _id: { $in: productIds } },
+        {
+          projection: {
+            images: 1,
+            _id: 1,
+            title: 1,
+            subtitle: 1,
+            currency: 1,
+            price: 1,
+            stockQuantity: 1,
+          },
+        }
+      )
       .toArray();
-    console.log(products);
-    return new Response(JSON.stringify({ success: true, items: products }), {
+
+    // 4️⃣ Merge quantity into product data
+    const mergedItems = products.map((product) => {
+      const cartItem = cartItems.find(
+        (item) => item.productId === product._id.toString()
+      );
+      return { ...product, quantity: cartItem ? cartItem.quantity : 0 };
+    });
+
+    return new Response(JSON.stringify({ success: true, items: mergedItems }), {
       status: 200,
     });
   } catch (err) {

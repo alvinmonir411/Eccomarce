@@ -28,8 +28,8 @@ const Navbar = () => {
     if (user) {
       const fetchCart = async () => {
         try {
-          const res = await axios.get(`/api/cart?userId=${user._id}`);
-          setCartCount(res.data.length);
+          const res = await axios.get(`/api/addTocard?userId=${user.uid}`);
+          setCartCount(res.data?.items?.length);
         } catch (err) {
           console.error("Failed to fetch cart:", err);
         }

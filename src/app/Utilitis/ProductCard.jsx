@@ -112,9 +112,7 @@ const ProductCard = ({ product }) => {
         {/* Add to Cart Button (Always Visible like reference) */}
         <div
           className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition ${
-            product.stockQuantity === 0
-              ? "bg-gray-400 text-white cursor-not-allowed"
-              : "bg-orange-500 hover:bg-orange-600 text-white"
+            product.stockQuantity === 0 ? "" : ""
           }`}
           disabled={product.stockQuantity === 0}
         >
