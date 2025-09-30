@@ -2,8 +2,9 @@
 import React from "react";
 import Image from "next/image";
 import { Star, Heart, Eye, ShoppingCart } from "lucide-react";
-import Addtocard from "./Addtocard";
+
 import Link from "next/link";
+import Addtocard from "./Addtocard";
 
 const ProductCard = ({ product }) => {
   const discount =
@@ -24,6 +25,8 @@ const ProductCard = ({ product }) => {
           src={mainImage}
           alt={product?.title || "Product"}
           fill
+          placeholder="blur"
+          blurDataURL="/placeholder.png"
           className="object-contain p-4 transition-transform duration-500 ease-in-out group-hover:scale-105"
           priority
         />
@@ -116,11 +119,10 @@ const ProductCard = ({ product }) => {
           }`}
           disabled={product.stockQuantity === 0}
         >
-          <ShoppingCart size={16} />
           {product.stockQuantity === 0 ? (
             "Out of Stock"
           ) : (
-            <Addtocard id={product._id} />
+            <Addtocard product={product} quantity={1} />
           )}
         </div>
       </div>

@@ -3,6 +3,8 @@ import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
 
 import Navbar from "./Components/Navbar";
+import { ToastContainer } from "react-toastify";
+import { CartProvider } from "./context/CartContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,14 +23,17 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning="true" data-qb-installed="true">
+    <html lang="en" suppressHydrationWarning="true">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         cz-shortcut-listen="true"
       >
         <AuthProvider>
-          <Navbar />
-          {children}
+          <CartProvider>
+            <ToastContainer />
+            <Navbar />
+            {children}
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>

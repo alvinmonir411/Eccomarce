@@ -1,37 +1,21 @@
 "use client";
-import React, { useState } from "react";
-import axios from "axios";
-import { useAuth } from "../context/AuthContext";
+import { ShoppingCart } from "lucide-react";
+import { useState } from "react";
+import { useCart } from "../context/CartContext";
+import Swal from "sweetalert2";
 
-const Addtocard = ({ id, quantity }) => {
+export default function Addtocard({ product, quantity = 1 }) {
+  const { addToCart } = useCart();
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
 
-  // If quantity is not provided, default to 1
-  const finalQuantity = quantity ? quantity : 1;
-
-  const handleAddToCart = async () => {
-    if (!user) {
-      alert("Please login to add items to your cart.");
-      return;
-    }
-
+  const handleClick = async () => {
     setLoading(true);
     try {
-      const res = await axios.post("/api/addTocard", {
-        userId: user.uid,
-        productId: id,
-        quantity: finalQuantity,
-      });
-
-      if (res.data.success) {
-        console.log("Cart updated:", res.data);
-        alert(`Added ${finalQuantity} item(s) to cart!`);
-      } else {
-        console.error("Error:", res.data.error);
-      }
-    } catch (error) {
-      console.error("Request failed:", error);
+      await addToCart(product, quantity);
+      Swal.fire(`${product.title} added to cart ✅`);
+    } catch (err) {
+      console.error("Add to cart failed:", err);
+      Swal.fire("Failed to add to cart ❌");
     } finally {
       setLoading(false);
     }
@@ -39,17 +23,12 @@ const Addtocard = ({ id, quantity }) => {
 
   return (
     <button
-      onClick={handleAddToCart}
+      onClick={handleClick}
       disabled={loading}
-      className={`w-full px-4 py-2 rounded-lg font-medium transition ${
-        loading
-          ? "bg-gray-400 cursor-not-allowed text-white"
-          : "bg-orange-500 hover:bg-orange-600 text-white"
-      }`}
+      className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold transition `}
     >
+      <ShoppingCart size={16} />
       {loading ? "Adding..." : "Add to Cart"}
     </button>
   );
-};
-
-export default Addtocard;
+}

@@ -1,9 +1,19 @@
 //  api/ cart / route.js;
 import clientPromise from "@/app/lib/mongodb";
 import { ObjectId } from "mongodb";
-export async function POST(req) {
-  const { userId, productId, quantity = 1 } = await req.json();
+import { NextResponse } from "next/server";
 
+export async function POST(req) {
+  const {
+    userId,
+    productId,
+    image,
+    title,
+    price,
+    quantity = 1,
+  } = await req.json();
+
+  console.log();
   const client = await clientPromise;
   const db = client.db(process.env.MONGO_DB);
 
@@ -28,6 +38,9 @@ export async function POST(req) {
         userId,
         productId,
         quantity,
+        image,
+        title,
+        price,
         createdAt: new Date(),
       });
       return new Response(JSON.stringify({ success: true, result }), {
@@ -67,45 +80,52 @@ export async function GET(req) {
       .find({ userId })
       .toArray();
 
-    if (cartItems.length === 0) {
-      return new Response(JSON.stringify({ success: true, items: [] }), {
-        status: 200,
-      });
-    }
-
-    // 2️⃣ Get all product IDs
-    const productIds = cartItems.map((item) => new ObjectId(item.productId));
-
-    // 3️⃣ Fetch product details
-    const products = await db
-      .collection("juwelaryitemdeteils")
-      .find(
-        { _id: { $in: productIds } },
-        {
-          projection: {
-            images: 1,
-            _id: 1,
-            title: 1,
-            subtitle: 1,
-            currency: 1,
-            price: 1,
-            stockQuantity: 1,
-          },
-        }
-      )
-      .toArray();
-
-    // 4️⃣ Merge quantity into product data
-    const mergedItems = products.map((product) => {
-      const cartItem = cartItems.find(
-        (item) => item.productId === product._id.toString()
-      );
-      return { ...product, quantity: cartItem ? cartItem.quantity : 0 };
-    });
-
-    return new Response(JSON.stringify({ success: true, items: mergedItems }), {
+    return new Response(JSON.stringify({ success: true, items: cartItems }), {
       status: 200,
     });
+  } catch (err) {
+    return new Response(
+      JSON.stringify({ success: false, error: err.message }),
+      { status: 500 }
+    );
+  }
+}
+
+// for delelte ?
+
+// api/addTocard/route.js
+
+export async function DELETE(req) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const cartId = searchParams.get("cartId");
+
+    if (!cartId) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Missing cartId" }),
+        { status: 400 }
+      );
+    }
+
+    const client = await clientPromise;
+    const db = client.db(process.env.MONGO_DB);
+
+    // ObjectId convert
+    const result = await db
+      .collection("usercart")
+      .deleteOne({ _id: new ObjectId(cartId) });
+
+    if (result.deletedCount === 0) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Cart item not found" }),
+        { status: 404 }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({ success: true, message: "Cart item deleted" }),
+      { status: 200 }
+    );
   } catch (err) {
     return new Response(
       JSON.stringify({ success: false, error: err.message }),

@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+
+import QuantitySelector from "@/app/Utilitis/QuantitySelector";
 import Addtocard from "@/app/Utilitis/Addtocard";
 
 export default function ProductDetails({ params }) {
@@ -85,6 +87,9 @@ export default function ProductDetails({ params }) {
                   alt={`${product.title}-${i}`}
                   width={120}
                   height={120}
+                  placeholder="blur"
+                  blurDataURL="/placeholder.png"
+                  priority
                   className="object-cover w-full h-full"
                 />
               </div>
@@ -114,24 +119,11 @@ export default function ProductDetails({ params }) {
             </div>
 
             {/* Quantity selector */}
-            <div className="flex items-center gap-4 mb-6">
-              <button
-                onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-                className="px-4 py-2 bg-gray-200 rounded"
-              >
-                -
-              </button>
-              <span className="text-lg font-medium">{quantity}</span>
-              <button
-                onClick={() => setQuantity((prev) => prev + 1)}
-                className="px-4 py-2 bg-gray-200 rounded"
-              >
-                +
-              </button>
-            </div>
+            <QuantitySelector value={quantity} onChange={setQuantity} />
 
             {/* Add to Cart */}
-            <Addtocard id={product._id} quantity={quantity} />
+
+            <Addtocard product={product} quantity={quantity} />
           </div>
 
           {/* Product Full Details */}

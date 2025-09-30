@@ -17,26 +17,13 @@ import {
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import { useCart } from "../context/CartContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
-  const { user, logout } = useAuth();
 
-  // Fetch cart items count
-  useEffect(() => {
-    if (user) {
-      const fetchCart = async () => {
-        try {
-          const res = await axios.get(`/api/addTocard?userId=${user.uid}`);
-          setCartCount(res.data?.items?.length);
-        } catch (err) {
-          console.error("Failed to fetch cart:", err);
-        }
-      };
-      fetchCart();
-    }
-  }, [user]);
+  const { user, logout } = useAuth();
+  const { cartItems } = useCart();
 
   const Navlinks = (
     <>
@@ -78,9 +65,9 @@ const Navbar = () => {
           {/* Cart Icon with count */}
           <Link href="/CartPage" className="hovarText relative">
             <FaShoppingCart size={20} />
-            {cartCount > 0 && (
+            {cartItems.length > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-                {cartCount}
+                {cartItems.length}
               </span>
             )}
           </Link>
