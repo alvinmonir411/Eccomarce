@@ -1,12 +1,30 @@
 // app/api/users/route.js
 import clientPromise from "@/app/lib/mongodb";
 
-export async function GET() {
+export async function GET(req) {
   try {
     const client = await clientPromise;
     const db = client.db("juwelary");
-    const users = await db.collection("users").find({}).toArray();
-    return new Response(JSON.stringify(users), { status: 200 });
+
+    const { searchParams } = new URL(req.url);
+    const uid = searchParams.get("uid"); // uid query parameter
+
+    if (!uid) {
+      return new Response(
+        JSON.stringify({ error: "Missing uid query parameter" }),
+        { status: 400 }
+      );
+    }
+
+    const user = await db.collection("users").findOne({ uid });
+
+    if (!user) {
+      return new Response(JSON.stringify({ error: "User not found" }), {
+        status: 404,
+      });
+    }
+
+    return new Response(JSON.stringify(user), { status: 200 });
   } catch (err) {
     console.error("MongoDB GET error:", err);
     return new Response(JSON.stringify({ error: err.message }), {

@@ -62,6 +62,7 @@ export const AuthProvider = ({ children }) => {
       // Save user in MongoDB
       await axios.post("/api/users", {
         name: name,
+        role: "user",
         email: userCredential.user.email,
         uid: userCredential.user.uid,
         createdAt: new Date(),
@@ -88,6 +89,7 @@ export const AuthProvider = ({ children }) => {
       // Save in MongoDB
       await axios.post("/api/users", {
         name: user.displayName,
+        role: "user",
         email: user.email,
         uid: user.uid,
         createdAt: new Date(),
