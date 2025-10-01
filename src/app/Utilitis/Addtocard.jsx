@@ -25,7 +25,7 @@ export default function Addtocard({ product, quantity = 1 }) {
     <button
       onClick={handleClick}
       disabled={loading}
-      className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold transition `}
+      className={`w-full flex items-center bg-accent text-accent-content justify-center  gap-2 px-4 py-2 rounded-lg font-semibold transition `}
     >
       <ShoppingCart size={16} />
       {loading ? "Adding..." : "Add to Cart"}

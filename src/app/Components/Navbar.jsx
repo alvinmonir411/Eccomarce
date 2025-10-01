@@ -23,6 +23,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const { user, logout } = useAuth();
+
   const { cartItems } = useCart();
 
   const Navlinks = (
@@ -74,12 +75,12 @@ const Navbar = () => {
 
           {/* Login / Logout */}
           {user ? (
-            <button
-              onClick={logout}
+            <Link
+              href={"/Profile"}
               className="hovarText flex items-center gap-1"
             >
-              <FaUser size={20} /> Logout
-            </button>
+              <FaUser size={20} /> {user.displayName}
+            </Link>
           ) : (
             <Link
               href="/auth/register"
